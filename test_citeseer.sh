@@ -1,0 +1,1 @@
+python pr-gat.py --lam_pw_emd 10 --patience 200 --only_test True --para_name 'citeseer_example' --pw_adj_name 'citeseer_example' --dataset 'citeseer' --seed 77 --order 4
