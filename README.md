@@ -16,7 +16,7 @@ This is the code of paper: Graph Attention Networks with LSTM-based Path Reweigh
 
 # Test PR-GAT
 
-First you should unzip ***pre-trained-model.zip***,
+First you should unzip *pre-trained-model.zip*,
 * Test PR-GAT on Citeseer: `sh test_citeseer.sh`
 * Test PR-GAT on Cora: `sh test_cora.sh`
 
