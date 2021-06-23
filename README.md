@@ -1,7 +1,7 @@
 #  PR-GAT
 
 This is the code of paper: Graph Attention Networks with LSTM-based Path Reweighting.
-```
+
 ```
 @misc{chen2021graph,
     title={Graph Attention Networks with LSTM-based Path Reweighting},
@@ -11,7 +11,6 @@ This is the code of paper: Graph Attention Networks with LSTM-based Path Reweigh
     archivePrefix={arXiv},
     primaryClass={cs.LG}
 }
-```
 ```
 
 # Requirements
