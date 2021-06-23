@@ -1,7 +1,18 @@
 #  PR-GAT
 
 This is the code of paper: Graph Attention Networks with LSTM-based Path Reweighting.
-
+```
+```
+@misc{chen2021graph,
+    title={Graph Attention Networks with LSTM-based Path Reweighting},
+    author={Jianpeng Chen and Yujing Wang and Ming Zeng and Zongyi Xiang and Yazhou Ren},
+    year={2021},
+    eprint={2106.10866},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
+```
+```
 
 # Requirements
 
@@ -27,7 +38,7 @@ First you should unzip *pre-trained-model.zip*,
 
 # Results of PR-GAT
 
-The test accuracies of PR-GAT on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
+The test accuracies(%) of PR-GAT on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
 
 | cora | citeseer | pubmed | Cora-Full | CoauthorCS | AmazonComputers| AmazonPhoto |
 | ---- | -------- | ------ | ------ | ------ | ------ | ------ |
