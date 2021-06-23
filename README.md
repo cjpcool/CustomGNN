@@ -24,6 +24,18 @@ This is the code of paper: Graph Attention Networks with LSTM-based Path Reweigh
 
 * Large datasets will be dowloaded automatically by PyTorch-Geometric when you run `python pr-gat.py --dataset ['CoraFull', 'CoauthorCS', 'AmazonComputers', 'AmazonPhoto']`
 
+The details of datasets are as followes:
+| Dataset         | Nodes | Edges  | Classes | Features | Label Rate |
+|-----------------|-------|--------|---------|----------|------------|
+| Cora            | 2708  | 5429   | 7       | 1433     | 0.0516     |
+| Citeseer        | 3327  | 4732   | 6       | 3703     | 0.0360     |
+| PubMed          | 19717 | 44338  | 3       | 500      | 0.0030     |
+| Cora-Full       | 19749 | 63262  | 68      | 8710     | 0.0689     |
+| Coauthor CS     | 18333 | 81894  | 15      | 6805     | 0.0164     |
+| Amazon Computer | 13752 | 245861 | 10      | 767      | 0.0145     |
+| Amazon Photo    | 7650  | 119081 | 8       | 745      | 0.0209     |
+
+
 # Test PR-GAT
 
 First you should unzip *pre-trained-model.zip*,
@@ -42,18 +54,6 @@ The test accuracies(%) of PR-GAT on 7 datasets (3 citation graphs with public sp
 | cora | citeseer | pubmed | Cora-Full | CoauthorCS | AmazonComputers| AmazonPhoto |
 | ---- | -------- | ------ | ------ | ------ | ------ | ------ |
 | 85.3 | 76.2     | 82.1   |44.2 |93.4 | 81.9 | 92.0 |
-
-The details of datasets are as followes:
-| Dataset         | Nodes | Edges  | Classes | Features | Label Rate |
-|-----------------|-------|--------|---------|----------|------------|
-| Cora            | 2708  | 5429   | 7       | 1433     | 0.0516     |
-| Citeseer        | 3327  | 4732   | 6       | 3703     | 0.0360     |
-| PubMed          | 19717 | 44338  | 3       | 500      | 0.0030     |
-| Cora-Full       | 19749 | 63262  | 68      | 8710     | 0.0689     |
-| Coauthor CS     | 18333 | 81894  | 15      | 6805     | 0.0164     |
-| Amazon Computer | 13752 | 245861 | 10      | 767      | 0.0145     |
-| Amazon Photo    | 7650  | 119081 | 8       | 745      | 0.0209     |
-
 
 
 # Running Environments
