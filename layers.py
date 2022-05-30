@@ -16,7 +16,7 @@ class PathWeightLayer(nn.Module):
         self.num_layers = 1
         self.lstm_layer = torch.nn.LSTM(embedding_dim, lstm_hiddeen_unit, batch_first=True,
                                         bidirectional=self.bidirectional,bias=True, num_layers=self.num_layers)
-        # self.gru = torch.nn.GRU(input_size=embedding_dim, hidden_size=lstm_hiddeen_unit, batch_first=True, bidirectional=self.bidirectional)
+        self.gru = torch.nn.GRU(input_size=embedding_dim, hidden_size=lstm_hiddeen_unit, batch_first=True, bidirectional=self.bidirectional)
         self.mean_pooling = torch.nn.AvgPool1d(lstm_hiddeen_unit)
         # self.max_pooling = torch.nn.MaxPool1d(lstm_hiddeen_unit)
         # self.batch_norm = torch.nn.BatchNorm1d(lstm_hiddeen_unit)
@@ -43,8 +43,8 @@ class PathWeightLayer(nn.Module):
         batch_size = len(sub_paths_length)
         hidden = self.init_hidden(batch_size)
         packed_path = pack_padded_sequence(sub_paths_emd, sub_paths_length, enforce_sorted=False,batch_first=True)
-        _ , (lstm_out,_) = self.lstm_layer(packed_path,hidden)
-        # _, lstm_out = self.gru(packed_path, hidden[0])
+        # _ , (lstm_out,_) = self.lstm_layer(packed_path,hidden)
+        _, lstm_out = self.gru(packed_path, hidden[0])
         # lstm_out , (_,_)= self.lstm_layer(packed_path, hidden)
         # lstm_out, _ = pad_packed_sequence(lstm_out, padding_value=0.0)
 

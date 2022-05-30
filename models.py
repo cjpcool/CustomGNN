@@ -24,6 +24,10 @@ class PathWeightModel(nn.Module):
         nn.init.xavier_uniform_(self.W_pw.data, gain=1.414)
         # nn.init.zeros_(self.bias_pw)
 
+        # self.lam_pw_emd = nn.Parameter(torch.FloatTensor(2))
+        # nn.init.zeros_(self.lam_pw_emd)
+
+
         self.PWLayer = PathWeightLayer(embedding_dim, lstm_hidden_unit)
         self.MLP = MLP(2*embedding_dim, nhid, nclass, self.dropout_input, self.dropout_hidden)
         # self.MLP_GRAND = MLP(nfeat, 32, nclass, self.dropout_input, self.dropout_hidden)
@@ -85,13 +89,16 @@ class PathWeightModel(nn.Module):
         if pw_adj is None:
             pw_adj = self.get_pw_adj(gnn_emd, pairs, sub_paths, sub_path_length)
         pw_adj1 = F.dropout(pw_adj, self.dropout_pw, training=self.training)
-        pw_emd = self.lam_pw_emd * torch.matmul(pw_adj1, nodes_embedding)
+        pw_emd = torch.matmul(pw_adj1, nodes_embedding)
         # pw_emd = self.norm(pw_emd)
-        embedding_prim = torch.cat((gnn_emd, pw_emd), dim=1)
+
+        # lam_gnn_emd, lam_pw_emd = F.softmax(self.lam_pw_emd)
+        embedding_prim = torch.cat((gnn_emd, self.lam_pw_emd *pw_emd), dim=1)
+        # embedding_prim = gnn_emd
         # embedding_prim = pw_emd
         # MLP
         # embedding_prim = gnn_emd.add(pw_emd)
-
+        # print(lam_pw_emd, lam_gnn_emd)
         out = self.MLP(embedding_prim)
 
         return out.log_softmax(dim=-1), pw_adj

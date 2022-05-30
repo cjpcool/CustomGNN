@@ -1,5 +1,5 @@
 import sys
-import networkx as nx
+# import networkx as nx
 import numpy as np
 import scipy.sparse as sp
 

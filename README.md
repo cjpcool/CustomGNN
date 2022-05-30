@@ -1,17 +1,7 @@
-#  PR-GAT
+#  CustomGNN
 
-This is the code of paper: Graph Attention Networks with LSTM-based Path Reweighting.
+This is the code of paper: "Customizing Graph Neural Networks using Path Reweighting"
 
-```
-@misc{chen2021graph,
-    title={Graph Attention Networks with LSTM-based Path Reweighting},
-    author={Jianpeng Chen and Yujing Wang and Ming Zeng and Zongyi Xiang and Yazhou Ren},
-    year={2021},
-    eprint={2106.10866},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG}
-}
-```
 
 # Requirements
 
@@ -24,21 +14,8 @@ This is the code of paper: Graph Attention Networks with LSTM-based Path Reweigh
 
 * Large datasets will be dowloaded automatically by PyTorch-Geometric when you run `python pr-gat.py --dataset ['CoraFull', 'CoauthorCS', 'AmazonComputers', 'AmazonPhoto']`
 
-The details of datasets are as followes:
-| Dataset         | Nodes | Edges  | Classes | Features | Label Rate |
-|-----------------|-------|--------|---------|----------|------------|
-| Cora            | 2708  | 5429   | 7       | 1433     | 0.0516     |
-| Citeseer        | 3327  | 4732   | 6       | 3703     | 0.0360     |
-| PubMed          | 19717 | 44338  | 3       | 500      | 0.0030     |
-| Cora-Full       | 19749 | 63262  | 68      | 8710     | 0.0689     |
-| Coauthor CS     | 18333 | 81894  | 15      | 6805     | 0.0164     |
-| Amazon Computer | 13752 | 245861 | 10      | 767      | 0.0145     |
-| Amazon Photo    | 7650  | 119081 | 8       | 745      | 0.0209     |
-
-
 # Test PR-GAT
 
-First you should unzip *pre-trained-model.zip*,
 * Test PR-GAT on Citeseer: `sh test_citeseer.sh`
 * Test PR-GAT on Cora: `sh test_cora.sh`
 
@@ -49,11 +26,12 @@ First you should unzip *pre-trained-model.zip*,
 
 # Results of PR-GAT
 
-The test accuracies(%) of PR-GAT on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
+The test accuracies of PR-GAT on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
 
 | cora | citeseer | pubmed | Cora-Full | CoauthorCS | AmazonComputers| AmazonPhoto |
 | ---- | -------- | ------ | ------ | ------ | ------ | ------ |
 | 85.3 | 76.2     | 82.1   |44.2 |93.4 | 81.9 | 92.0 |
+
 
 
 # Running Environments
