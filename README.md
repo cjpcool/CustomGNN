@@ -12,23 +12,23 @@ This is the code of paper: "Customizing Graph Neural Networks using Path Reweigh
 # Datasets
 * Cora and Citeseer are included in `.\data\cora` and `.\data\citeseer` respectively.
 
-* Large datasets will be dowloaded automatically by PyTorch-Geometric when you run `python pr-gat.py --dataset ['CoraFull', 'CoauthorCS', 'AmazonComputers', 'AmazonPhoto']`
+* Large datasets will be dowloaded automatically by PyTorch-Geometric when you run `python custom_gnn.py --dataset ['CoraFull', 'CoauthorCS', 'AmazonComputers', 'AmazonPhoto']`
 
-# Test PR-GAT
+# Test CustomGNN
 
-* Test PR-GAT on Citeseer: `sh test_citeseer.sh`
-* Test PR-GAT on Cora: `sh test_cora.sh`
+* Test CustomGNN on Citeseer: `sh test_citeseer.sh`
+* Test CustomGNN on Cora: `sh test_cora.sh`
 
-# Train PR-GAT
+# Train CustomGNN
 
-* Train PR-GAT on Citeseer: `sh train_citeseer.sh`
-* Train PR-GAT on Cora: `sh train_cora.sh`
+* Train CustomGNN on Citeseer: `sh train_citeseer.sh`
+* Train CustomGNN on Cora: `sh train_cora.sh`
 
-# Results of PR-GAT
+# Results of CustomGNN
 
-The test accuracies of PR-GAT on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
+The test accuracies of CustomGNN on 7 datasets (3 citation graphs with public split and 4 large datasets with random split) are as follows.
 
-| cora | citeseer | pubmed | Cora-Full | CoauthorCS | AmazonComputers| AmazonPhoto |
+| Cora | Citeseer | PubMed | Cora-Full | CoauthorCS | AmazonComputers| AmazonPhoto |
 | ---- | -------- | ------ | ------ | ------ | ------ | ------ |
 | 85.3 | 76.2     | 82.1   |44.2 |93.4 | 81.9 | 92.0 |
 
