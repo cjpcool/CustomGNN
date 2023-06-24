@@ -1,4 +1,5 @@
-from utils import accuracy, load_data, pathsGen, consis_loss, load_large_dataset
+import random
+from utils import accuracy, load_data, pathsGen, consis_loss, load_large_dataset, load_syn_cora, load_Ogbn
 import torch
 import torch.nn.functional as F
 from models import PathWeightModel
@@ -9,29 +10,30 @@ import time
 
 parser = argparse.ArgumentParser()
 
-# globla settings
+# globlal settings
 parser.add_argument('--only_test', type=bool, default=False)
 parser.add_argument('--para_name', type=str, default='cora')
-parser.add_argument('--pw_adj_name', type=str, default='cora')
+parser.add_argument('--pw_adj_name', type=str, default='ogbn-arxiv')
 
-parser.add_argument('--dataset', type=str, default='cora') #CoraFull CoauthorCS CoauthorPhysics AminerCS AmazonComputers AmazonPhoto
+parser.add_argument('--dataset', type=str, default='ogbn-arxiv') #syn-cora ogbn-arxiv CoraFull CoauthorCS CoauthorPhysics AminerCS AmazonComputers AmazonPhoto
+parser.add_argument('--homophily_ratio_name', type=str, default='h0.80-r1')
 parser.add_argument('--use_label_rate', type=bool, default=False)
 parser.add_argument('--num_example_per_class', type=float, default=2)
 parser.add_argument('--path', type=str, default='./data/')
 parser.add_argument('--cuda',type=bool, default=True, help='ables CUDA training.')
 parser.add_argument('--seed', type=int, default=42, help='Random seed.')
-parser.add_argument('--cuda_device', type=int, default=0, help='cuda device')
+parser.add_argument('--cuda_device', type=int, default=1, help='cuda device')
 parser.add_argument('--patience', type=int, default=300, help='patience')
 parser.add_argument('--schedule_patience', type=int, default=50, help='schedule_patience')
 parser.add_argument('--epochs', type=int, default=10000, help='Number of epochs to train.')
-parser.add_argument('--lam_pw_emd', type=float, default=1.0, help='Number of epochs to train.')   #citeseer 5 10; cora 0.1 0.5;
+parser.add_argument('--lam_pw_emd', type=float, default=10.0, help='tradeoff between \\hat{F} and \\dot{F}.')   #citeseer 5 10; cora 0.1 0.5;
 
 # triplet loss settings
-parser.add_argument('--use_triple', type=bool, default=True)# 50 135 128 256 for citeseer cora pubmed nell
+parser.add_argument('--use_triple', type=int, default=0, help='1 or 0')# 50 135 128 256 for citeseer cora pubmed nell
 parser.add_argument('--samp_neg', type=int, default=5000, help='negative pairs of triple_loss.')
 parser.add_argument('--samp_pos', type=int, default=15000, help='positive pairs of triple_loss.')
-parser.add_argument('--lam_tri', type=int, default=.1, help='the weight of triple loss') # 3=85.1, 74.3,
-parser.add_argument('--lam_tri_lstm', type=int, default=1., help='the weight of triple loss')
+parser.add_argument('--lam_tri', type=float, default=.01, help='the weight of triple loss') # 3=85.1, 74.3,
+parser.add_argument('--lam_tri_lstm', type=float, default=1., help='the weight of triple loss')
 parser.add_argument('--margin', type=float, default=.1, help='margin between negative samples')
 parser.add_argument('--pesudo_ratio', type=float, default=1., help='number of pesudo labels for triple loss')
 
@@ -43,15 +45,15 @@ parser.add_argument('--weight_decay', type=float, default=5e-4, help='Weight dec
 parser.add_argument('--batch_size', type=int, default=300)
 # consistency loss settings
 parser.add_argument('--use_consis', type=bool, default=True)
-parser.add_argument('--T', type=int, default=0.5, help='temperature')
+parser.add_argument('--T', type=float, default=0.5, help='temperature')
 parser.add_argument('--K', type=int, default=4, help='number of batch per epoch')
 parser.add_argument('--lam_u', type=int, default=1.,
                     help='tradeoff between sup loss and unsup loss, loss=sup_loss + lam_u * unsup_loss')
 
 #Path Attention module settings
 parser.add_argument('--embedding_dim', type=int, default=512)
-parser.add_argument('--window_size', type=int, default=6)  # cora3,10; citeseer 456
-parser.add_argument('--path_length', type=int, default=10)
+parser.add_argument('--window_size', type=int, default=8)  # cora3,10; citeseer 456
+parser.add_argument('--path_length', type=int, default=8)
 parser.add_argument('--lstm_hidden_units', type=int, default=128)
 
 # MLP settings
@@ -80,7 +82,12 @@ if args.dataset in ['CoraFull', 'CoauthorCS', 'AmazonComputers', 'AmazonPhoto']:
     graph, labels, adj, features, idx_val, idx_test, idx_train = load_large_dataset(root=args.path, name=args.dataset)
 elif args.dataset in ['cora', 'citeseer', 'pubmed']:
     graph, labels, adj, features, idx_val, idx_test, idx_train, _ = load_data(args.dataset, args.path+args.dataset)
+elif args.dataset in ['ogbn-arxiv']:
+    graph, labels, adj, features, idx_val, idx_test, idx_train = load_Ogbn(dataset, root=args.path)
 
+elif args.dataset in ['syn-cora', 'syn-product']:
+    seed = random.randint(0,200)
+    graph, labels, adj, features, idx_val, idx_test, idx_train = load_syn_cora(args.dataset, args.path, args.homophily_ratio_name, seed)
 node_num = len(graph)
 nclass = int(labels.max()) + 1
 embedding_dim =args.embedding_dim
@@ -140,7 +147,6 @@ def triple_loss(features,pw_adj, logs,samp_neg, samp_pos, margin=args.margin):
     avg_p = sum_p / len(ps)
     out = avg_p.argmax(dim=-1).view(-1,1)
     indicator_adj = (out == out.t())
-
     negs = torch.where((~indicator_adj).triu(1))
     poss = torch.where(indicator_adj.triu(1))
 
@@ -262,13 +268,13 @@ def train():
                   ),
 
         if loss_val_list[-1] <= loss_mn or acc_val_list[-1] >= acc_mx:  # or epoch < 400:
-            if acc_val_list[-1] >= acc_best: #and loss_val_list[-1] <= loss_best:  #
+            if acc_val_list[-1] >= acc_best : #and loss_val_list[-1] <= loss_best:  #
                 loss_best = loss_val_list[-1]
                 acc_best = acc_val_list[-1]
                 best_epoch = epoch
                 if epoch >= 0:
-                    torch.save(pw_adj, dataset+'.pth')
-                    torch.save(model.state_dict(), dataset + '.pkl')
+                    torch.save(pw_adj, "./checkpoint/"+dataset+'.pth')
+                    torch.save(model.state_dict(), "./checkpoint/"+dataset + '.pkl')
 
             loss_mn = np.min((loss_val_list[-1], loss_mn))
             acc_mx = np.max((acc_val_list[-1], acc_mx))
@@ -292,11 +298,12 @@ def train():
 
 def test(pw_adj_name):
     model.eval()
+    start_time = time.time()
     with torch.no_grad():
         X = next(pathsGen(node_num, 0, graph, args.path_length, args.window_size))
-        pw_adj = torch.load(pw_adj_name+'.pth').to(device)
+        pw_adj = torch.load("./checkpoint/"+ pw_adj_name+'.pth', map_location=device)
         output, _ = model(features, adj, *X, pw_adj=pw_adj)
-
+        end_time = time.time()
         loss_test = F.nll_loss(output[idx_test], labels[idx_test])
         loss_train = F.nll_loss(output[idx_train], labels[idx_train])
         loss_val = F.nll_loss(output[idx_val], labels[idx_val])
@@ -308,7 +315,8 @@ def test(pw_adj_name):
           "loss_test= {:.4f}".format(loss_test.data.item()),
           "loss_train= {:.4f}".format(loss_train.data.item()),
           "acc_test= {:.4f}".format(acc_test.item()),
-          "acc_train= {:.4f}".format(acc_train.item()))
+          "acc_train= {:.4f}".format(acc_train.item()),
+          "test_time= {:.4f}".format(end_time - start_time))
     return loss_test.item(), loss_val.item(), loss_train.item(), acc_test.item(), acc_val.item(), acc_train.item()
 
 
@@ -322,7 +330,7 @@ else:
 
 ## test
 # Restore best model
-print('Loading {}'.format(para_name))
-model.load_state_dict(torch.load(para_name + '.pkl'))
+print('Loading {}'.format("./checkpoint/"+para_name))
+model.load_state_dict(torch.load("./checkpoint/"+ para_name + '.pkl', map_location=device))
 model.eval()
 test(pw_adj_name)
