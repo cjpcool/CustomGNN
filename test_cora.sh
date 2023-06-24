@@ -1,0 +1,1 @@
+python custom_gnn.py --cuda_device 0 --only_test True --dataset cora --para_name cora85.6 --pw_adj_name cora85.6 --order 8 --nhid 128 --lam_pw_emd 1.0 --embedding_dim 512 --path_length 10 --window_size 10 --lstm_hidden_units 128

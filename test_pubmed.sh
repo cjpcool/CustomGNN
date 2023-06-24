@@ -1,0 +1,2 @@
+python custom_gnn.py --cuda_device 0 --only_test True --dataset pubmed --para_name pubmed83.4 --pw_adj_name pubmed83.4 \
+  --lam_pw_emd 1.0 --order 5 --path_length 6 --window_size 5 --lstm_hidden_units 128 --embedding_dim 256 --nhid 128 --T 0.2
